@@ -195,53 +195,6 @@ check_os_comp() {
     print_error "Unsupported OS"
     exit 1
   fi
-
-  # check virtualization
-  echo -e  "* Installing virt-what..."
-  if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
-    # silence dpkg output
-    export DEBIAN_FRONTEND=noninteractive
-
-    # install virt-what
-    apt-get -y update -qq
-    apt-get install -y virt-what -qq
-
-    # unsilence
-    unset DEBIAN_FRONTEND
-  elif [ "$OS" == "centos" ]; then
-    if [ "$OS_VER_MAJOR" == "7" ]; then
-      yum -q -y update
-
-      # install virt-what
-      yum -q -y install virt-what
-    elif [ "$OS_VER_MAJOR" == "8" ]; then
-      dnf -y -q update
-
-      # install virt-what
-      dnf install -y -q virt-what
-    fi
-  else
-    print_error "Invalid OS."
-    exit 1
-  fi
-
-  virt_serv=$(virt-what)
-
-  case "$virt_serv" in
-    openvz)
-      print_warning "Unsupported type of virtualization detected. Please consult with your hosting provider whether your server can run Docker or not. Proceed at your own risk."
-      print_error "Installation aborted!"
-      exit 1
-      ;;
-    *)
-      [ "$virt_serv" != "" ] && print_warning "Virtualization: $virt_serv detected."
-      ;;
-  esac
-
-  if uname -r | grep -q "xxxx"; then
-    print_error "Unsupported kernel detected."
-    exit 1
-  fi
 }
 
 ############################
